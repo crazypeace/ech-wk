@@ -51,7 +51,7 @@ if sys.platform == 'win32':
 
 # 检查 PyQt5
 try:
-    from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+    from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QScrollArea, 
                                   QHBoxLayout, QLabel, QLineEdit, QPushButton, 
                                   QComboBox, QTextEdit, QCheckBox, QGroupBox, 
                                   QMessageBox, QInputDialog, QSystemTrayIcon, QMenu, QAction)
