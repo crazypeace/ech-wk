@@ -1,3 +1,13 @@
+# 面向GPT开发
+```
+附件中的代码 有一个问题, 在屏幕分辨率不高的情况下, 窗口显示不全, 而且没有滚动条
+```
+
+<img width="1055" height="585" alt="image" src="https://github.com/user-attachments/assets/483c870d-606d-4b91-b607-32f5cdb7b64b" />
+
+
+# 以下为原repo的 README
+
 # ECH Workers 客户端
 
 [![GitHub release](https://img.shields.io/github/release/byJoey/ech-wk.svg)](https://github.com/byJoey/ech-wk/releases)
