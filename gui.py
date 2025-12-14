@@ -401,9 +401,10 @@ class MainWindow(QMainWindow):
         """初始化界面"""
         self.setWindowTitle(APP_TITLE)
         
-        # Windows DPI 适配：根据系统 DPI 调整窗口大小
-        # PyQt5 的 AA_EnableHighDpiScaling 会自动处理缩放
-        # 我们设置逻辑像素大小，系统会自动转换为物理像素
+        # 设置窗口最小尺寸(确保基本可用)
+        self.setMinimumSize(700, 500)
+        
+        # Windows DPI 适配:根据系统 DPI 调整窗口大小
         base_width = 950
         base_height = 800
         
@@ -433,11 +434,14 @@ class MainWindow(QMainWindow):
                     screen_x = 0
                     screen_y = 0
             
-            # 确保窗口大小不超过可用区域
-            if base_width > screen_width:
-                base_width = screen_width - 40  # 留出边距
-            if base_height > screen_height:
-                base_height = screen_height - 40  # 留出边距，确保不遮挡任务栏
+            # 确保窗口大小不超过可用区域的90%(留出边距)
+            max_width = int(screen_width * 0.9)
+            max_height = int(screen_height * 0.9)
+            
+            if base_width > max_width:
+                base_width = max_width
+            if base_height > max_height:
+                base_height = max_height
             
             # 计算居中位置
             x = screen_x + (screen_width - base_width) // 2
@@ -460,11 +464,35 @@ class MainWindow(QMainWindow):
         # 应用现代化样式
         self.setStyleSheet(self._get_modern_style())
         
+        # ===== 关键修改:使用 QScrollArea =====
+        # 创建中心部件
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        
+        # 主布局(只包含滚动区域)
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # 创建滚动区域
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)  # 自动调整内容大小
+        scroll_area.setFrameShape(QScrollArea.NoFrame)  # 无边框
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        
+        # 创建可滚动的内容部件
+        scroll_content = QWidget()
+        scroll_area.setWidget(scroll_content)
+        
+        # 内容布局
+        layout = QVBoxLayout(scroll_content)
         layout.setSpacing(15)
         layout.setContentsMargins(20, 20, 20, 20)
+        
+        # 将滚动区域添加到主布局
+        main_layout.addWidget(scroll_area)
+        # ===== 修改结束 =====
         
         # 服务器管理
         server_group = QGroupBox("服务器管理")
@@ -581,14 +609,20 @@ class MainWindow(QMainWindow):
         log_layout = QVBoxLayout()
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
-        # 使用等宽字体，更适合日志显示
+        # 设置日志框的最小高度
+        self.log_text.setMinimumHeight(150)
+        # 使用等宽字体,更适合日志显示
         from PyQt5.QtGui import QFont
         font = QFont("Consolas" if sys.platform == 'win32' else "Monaco" if sys.platform == 'darwin' else "DejaVu Sans Mono", 9)
         self.log_text.setFont(font)
         log_layout.addWidget(self.log_text)
         log_group.setLayout(log_layout)
         layout.addWidget(log_group)
-    
+        
+        # 添加弹性空间,使日志框可以扩展
+        layout.addStretch()
+
+
     def _create_matrix_icon(self):
         """创建黑客帝国风格图标"""
         # 创建不同尺寸的图标
